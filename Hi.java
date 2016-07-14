@@ -124,7 +124,7 @@ public class Hi {
 							Date todaydate=new Date();
 							java.sql.Date date=new java.sql.Date(todaydate.getTime());
 							System.out.println(date);
-							ResultSet unrs=dbconn.Query(conn, "account WHERE date=CURDATE() and recorded=0");
+							ResultSet unrs=dbconn.Query(conn, "account WHERE date<=CURDATE() and recorded=0");
 							while(unrs.next())
 							{
 								String voucherno=unrs.getString(1);
