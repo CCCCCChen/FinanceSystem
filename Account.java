@@ -3,7 +3,7 @@ import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-
+//import java.sql.Date;
 import java.awt.Font;
 
 import javax.swing.DefaultCellEditor;
@@ -19,7 +19,11 @@ import com.mysql.jdbc.Connection;
 
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
-import java.util.Date;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.awt.event.ActionEvent;
@@ -119,20 +123,20 @@ public class Account {
         ////////////////////////////////////////////////
         
 
-        //ĞŞ¸Ä±í¸ñµÄÄ¬ÈÏ±à¼­Æ÷£º
+        //ä¿®æ”¹è¡¨æ ¼çš„é»˜è®¤ç¼–è¾‘å™¨ï¼š
         table.getColumnModel().getColumn(7).setCellEditor(new MyButtonEditor());
 
          
 
 //        /*
-//        ÕâÑùºó¾ÍÄÜ»ù±¾´ïµ½Ğ§¹ûÁË¡£µ«ÊÇ»¹Òª×¢Òâ£¬¶ÔÁĞ2À´Ëµ£¬»¹ĞèÒªÆôÓÃ¿É±à¼­¹¦ÄÜ£¬²ÅĞĞ£¬²»È»ÈÔÈ»´¥·¢²»ÁËÊÂ¼şµÄ¡£
+//        è¿™æ ·åå°±èƒ½åŸºæœ¬è¾¾åˆ°æ•ˆæœäº†ã€‚ä½†æ˜¯è¿˜è¦æ³¨æ„ï¼Œå¯¹åˆ—2æ¥è¯´ï¼Œè¿˜éœ€è¦å¯ç”¨å¯ç¼–è¾‘åŠŸèƒ½ï¼Œæ‰è¡Œï¼Œä¸ç„¶ä»ç„¶è§¦å‘ä¸äº†äº‹ä»¶çš„ã€‚
 //
-//        ´úÂëÆ¬¶Î£º
+//        ä»£ç ç‰‡æ®µï¼š
 //        */
 //
 //        public boolean isCellEditable(int row, int column)  
 //        {  
-//            // ´øÓĞ°´Å¥ÁĞµÄ¹¦ÄÜÕâÀï±ØĞëÒª·µ»Øtrue²»È»°´Å¥µã»÷Ê±²»»á´¥·¢±à¼­Ğ§¹û£¬Ò²¾Í²»»á´¥·¢ÊÂ¼ş¡£   
+//            // å¸¦æœ‰æŒ‰é’®åˆ—çš„åŠŸèƒ½è¿™é‡Œå¿…é¡»è¦è¿”å›trueä¸ç„¶æŒ‰é’®ç‚¹å‡»æ—¶ä¸ä¼šè§¦å‘ç¼–è¾‘æ•ˆæœï¼Œä¹Ÿå°±ä¸ä¼šè§¦å‘äº‹ä»¶ã€‚   
 //            if (column == 2)  
 //            {  
 //                return true;  
@@ -246,6 +250,10 @@ public class Account {
 					i=0;
 					sumd = sumc = 0;
 					voucherNo = (String) table.getValueAt(i, 0);
+					String supplierno = (String) table.getValueAt(i, 1);  //now i=0
+					String customerno = (String) table.getValueAt(i, 2);
+					String productno = (String) table.getValueAt(i, 3);
+					String source = (String) table.getValueAt(i, 8);
 					do
 					{
 						if (sumd - sumc==0) no++;
@@ -254,12 +262,12 @@ public class Account {
 						{
 							voucherno = "0" + voucherno;
 						}
-						voucherNo = (String) table.getValueAt(i, 0);
+						voucherNo = (String) table.getValueAt(i, 0);     //whether we have got to the end
 						if (voucherNo.equals("")) break;
 						String account = (String) table.getValueAt(i, 0);
-						String supplierno = (String) table.getValueAt(i, 1);
-						String customerno = (String) table.getValueAt(i, 2);
-						String productno = (String) table.getValueAt(i, 3);
+//						String supplierno = (String) table.getValueAt(i, 1);
+//						String customerno = (String) table.getValueAt(i, 2);
+//						String productno = (String) table.getValueAt(i, 3);
 						DecimalFormat decimalFormat=new DecimalFormat(".00");
 						double amount = 0;
 						String samount = (String) table.getValueAt(i, 4);
@@ -286,10 +294,18 @@ public class Account {
 						sumc += dc==0?0:amount;
 						sumd += dc==0?amount:0;
 						String description = (String) table.getValueAt(i, 6);
-						Date utilDate = (Date)table.getValueAt(i, 7);
-						java.sql.Date date = new java.sql.Date(utilDate.getTime());
-						String source = (String) table.getValueAt(i, 8);			
-						
+						Date utildate=(Date) table.getValueAt(i, 7);
+						java.sql.Date date=new java.sql.Date(utildate.getTime());
+						System.out.println(date);
+//						SimpleDateFormat f=new SimpleDateFormat("yyyy-MM-dd");
+//						String dateString=f.format(date);
+//						System.out.println(dateString);
+//						java.util.Date utildate = (Date) table.getValueAt(i, 7);
+//						java.sql.Date date=new java.sql.Date(utildate.getTime());
+//						
+//						
+//						System.out.println(date);
+//						String source = (String) table.getValueAt(i, 8);			
 						String sql_account = "INSERT INTO account values(\""+voucherno+"\",\""+account+"\",\""+amount+"\","+dc+",\""+date+"\")";
 						String sql_voucher = "INSERT INTO voucher values(\""+voucherno+"\",\""+supplierno+"\",\""+customerno+"\",\""+productno +"\",\""+description+"\",\""+date+"\",\""+source+"\",\""+UserNo+"\")";
 						dbconn.Update(dbconn.conn, sql_account);
@@ -314,6 +330,43 @@ public class Account {
 		JButton btnClear = new JButton("Clear");
 		btnClear.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+//				((DefaultTableModel) table.getModel()).setRowCount(0);
+				
+				table.setModel(new DefaultTableModel(
+					new Object[][] {
+						{"", null, null, null, null, null, null, null, null, null},
+						{"", null, null, null, null, null, null, null, null, null},
+						{"", null, null, null, null, null, null, null, null, null},
+						{"", null, null, null, null, null, null, null, null, null},
+						{"", null, null, null, null, null, null, null, null, null},
+						{"", null, null, null, null, null, null, null, null, null},
+						{"", null, null, null, null, null, null, null, null, null},
+						{"", null, null, null, null, null, null, null, null, null},
+						{"", null, null, null, null, null, null, null, null, null},
+						{"", null, null, null, null, null, null, null, null, null},
+					},
+					new String[] {
+						"Account", "SupplierNo.", "CustomerNo.", "ProductNo.", "Amount", "D/C", "Description", "Date", "Source"
+					}
+				) {
+					Class[] columnTypes = new Class[] {
+						String.class, String.class, String.class, String.class, String.class, /*Float.class, Integer.class,*/String.class, String.class, Date.class, String.class
+					};
+					public Class getColumnClass(int columnIndex) {
+						return columnTypes[columnIndex];
+					}
+				});
+
+				//tableSale.setModel(model);
+				table.getColumnModel().getColumn(6).setPreferredWidth(50);
+				JComboBox box = new JComboBox();  
+		        box.addItem("Debit");  
+		        box.addItem("Credit");  
+		        TableColumn d = table.getColumn("D/C");  
+		        DefaultCellEditor dce = new DefaultCellEditor(box);   
+		        d.setCellEditor(dce);
+		        
+		        table.getColumnModel().getColumn(7).setCellEditor(new MyButtonEditor());
 			/*	
 			    textVoucher.setText("");
 				textAccount.setText("");
@@ -374,17 +427,17 @@ public class Account {
       
         public MyButtonEditor()  
         {  
-            // DefautlCellEditorÓĞ´Ë¹¹ÔìÆ÷£¬ĞèÒª´«ÈëÒ»¸ö£¬µ«Õâ¸ö²»»áÊ¹ÓÃµ½£¬Ö±½ÓnewÒ»¸ö¼´¿É¡£   
+            // DefautlCellEditoræœ‰æ­¤æ„é€ å™¨ï¼Œéœ€è¦ä¼ å…¥ä¸€ä¸ªï¼Œä½†è¿™ä¸ªä¸ä¼šä½¿ç”¨åˆ°ï¼Œç›´æ¥newä¸€ä¸ªå³å¯ã€‚   
             super(new JTextField());  
       
-            // ÉèÖÃµã»÷¼¸´Î¼¤»î±à¼­¡£   
+            // è®¾ç½®ç‚¹å‡»å‡ æ¬¡æ¿€æ´»ç¼–è¾‘ã€‚   
             this.setClickCountToStart(1);  
       
             this.initButton();  
       
             this.initPanel();  
       
-            // Ìí¼Ó°´Å¥¡£   
+            // æ·»åŠ æŒ‰é’®ã€‚   
             this.panel.add(this.button);  
         }  
       
@@ -392,22 +445,22 @@ public class Account {
         {  
             this.button = new JButton();  
       
-            // ÉèÖÃ°´Å¥µÄ´óĞ¡¼°Î»ÖÃ¡£   
+            // è®¾ç½®æŒ‰é’®çš„å¤§å°åŠä½ç½®ã€‚   
             this.button.setBounds(0, 0, 50, 15);  
       
-            // Îª°´Å¥Ìí¼ÓÊÂ¼ş¡£ÕâÀïÖ»ÄÜÌí¼ÓActionListnerÊÂ¼ş£¬MouseÊÂ¼şÎŞĞ§¡£   
+            // ä¸ºæŒ‰é’®æ·»åŠ äº‹ä»¶ã€‚è¿™é‡Œåªèƒ½æ·»åŠ ActionListneräº‹ä»¶ï¼ŒMouseäº‹ä»¶æ— æ•ˆã€‚   
             this.button.addActionListener(new ActionListener()  
             {  
                 public void actionPerformed(ActionEvent e)  
                 {  
-                    // ´¥·¢È¡Ïû±à¼­µÄÊÂ¼ş£¬²»»áµ÷ÓÃtableModelµÄsetValue·½·¨¡£   
+                    // è§¦å‘å–æ¶ˆç¼–è¾‘çš„äº‹ä»¶ï¼Œä¸ä¼šè°ƒç”¨tableModelçš„setValueæ–¹æ³•ã€‚   
                     MyButtonEditor.this.fireEditingCanceled();
                     int row = table.getSelectedRow();
                     int col = table.getSelectedColumn();
                     System.out.print("Performed Success! Col: " + col + " Row: " + row + "\n");
                     DateUI dateTable = new DateUI(table, row, col);
-                    // ÕâÀï¿ÉÒÔ×öÆäËü²Ù×÷¡£   
-                    // ¿ÉÒÔ½«table´«Èë£¬Í¨¹ıgetSelectedRow,getSelectColumn·½·¨»ñÈ¡µ½µ±Ç°Ñ¡ÔñµÄĞĞºÍÁĞ¼°ÆäËü²Ù×÷µÈ¡£   
+                    // è¿™é‡Œå¯ä»¥åšå…¶å®ƒæ“ä½œã€‚   
+                    // å¯ä»¥å°†tableä¼ å…¥ï¼Œé€šè¿‡getSelectedRow,getSelectColumnæ–¹æ³•è·å–åˆ°å½“å‰é€‰æ‹©çš„è¡Œå’Œåˆ—åŠå…¶å®ƒæ“ä½œç­‰ã€‚   
                 }  
             });  
       
@@ -417,25 +470,25 @@ public class Account {
         {  
             this.panel = new JPanel();  
       
-            // panelÊ¹ÓÃ¾ø¶Ô¶¨Î»£¬ÕâÑùbutton¾Í²»»á³äÂúÕû¸öµ¥Ôª¸ñ¡£   
+            // panelä½¿ç”¨ç»å¯¹å®šä½ï¼Œè¿™æ ·buttonå°±ä¸ä¼šå……æ»¡æ•´ä¸ªå•å…ƒæ ¼ã€‚   
             this.panel.setLayout(null);  
         }  
       
       
         /** 
-         * ÕâÀïÖØĞ´¸¸ÀàµÄ±à¼­·½·¨£¬·µ»ØÒ»¸öJPanel¶ÔÏó¼´¿É£¨Ò²¿ÉÒÔÖ±½Ó·µ»ØÒ»¸öButton¶ÔÏó£¬µ«ÊÇÄÇÑù»áÌî³äÂúÕû¸öµ¥Ôª¸ñ£© 
+         * è¿™é‡Œé‡å†™çˆ¶ç±»çš„ç¼–è¾‘æ–¹æ³•ï¼Œè¿”å›ä¸€ä¸ªJPanelå¯¹è±¡å³å¯ï¼ˆä¹Ÿå¯ä»¥ç›´æ¥è¿”å›ä¸€ä¸ªButtonå¯¹è±¡ï¼Œä½†æ˜¯é‚£æ ·ä¼šå¡«å……æ»¡æ•´ä¸ªå•å…ƒæ ¼ï¼‰ 
          */  
         @Override  
         public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column)  
         {  
-            // Ö»Îª°´Å¥¸³Öµ¼´¿É¡£Ò²¿ÉÒÔ×÷ÆäËü²Ù×÷¡£   
+            // åªä¸ºæŒ‰é’®èµ‹å€¼å³å¯ã€‚ä¹Ÿå¯ä»¥ä½œå…¶å®ƒæ“ä½œã€‚   
             this.button.setText(value == null ? "" : String.valueOf(value));  
       
             return this.panel;  
         }  
       
         /** 
-         * ÖØĞ´±à¼­µ¥Ôª¸ñÊ±»ñÈ¡µÄÖµ¡£Èç¹û²»ÖØĞ´£¬ÕâÀï¿ÉÄÜ»áÎª°´Å¥ÉèÖÃ´íÎóµÄÖµ¡£ 
+         * é‡å†™ç¼–è¾‘å•å…ƒæ ¼æ—¶è·å–çš„å€¼ã€‚å¦‚æœä¸é‡å†™ï¼Œè¿™é‡Œå¯èƒ½ä¼šä¸ºæŒ‰é’®è®¾ç½®é”™è¯¯çš„å€¼ã€‚ 
          */  
         @Override  
         public Object getCellEditorValue()  
